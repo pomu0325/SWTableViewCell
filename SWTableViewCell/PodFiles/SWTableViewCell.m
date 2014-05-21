@@ -8,6 +8,7 @@
 
 #import "SWTableViewCell.h"
 #import "SWUtilityButtonView.h"
+#import "UITableViewCell+FixUITableViewCellAutolayout.h"
 
 static NSString * const kTableViewCellContentView = @"UITableViewCellContentView";
 
@@ -294,7 +295,6 @@ static NSString * const kTableViewPanState = @"state";
 
 - (void)layoutSubviews
 {
-    [super layoutSubviews];
     
     // Offset the contentView origin so that it appears correctly w/rt the enclosing scroll view (to which we moved it).
     CGRect frame = self.contentView.frame;
@@ -309,6 +309,8 @@ static NSString * const kTableViewPanState = @"state";
     }
     
     [self updateCellState];
+    [super layoutSubviews];
+
 }
 
 - (void)prepareForReuse
