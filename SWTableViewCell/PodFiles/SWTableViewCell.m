@@ -77,12 +77,38 @@ static NSString * const kTableViewCellContentView = @"UITableViewCellContentView
 - (void)initializer
 {
     // Set up scroll view that will host our cell content
+//<<<<<<< HEAD
     self.cellScrollView = [[SWCellScrollView alloc] init];
     self.cellScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cellScrollView.delegate = self;
     self.cellScrollView.showsHorizontalScrollIndicator = NO;
     self.cellScrollView.scrollsToTop = NO;
     self.cellScrollView.scrollEnabled = YES;
+/*=======
+    SWCellScrollView *cellScrollView = [[SWCellScrollView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), self.height)];
+    cellScrollView.delegate = self;
+    cellScrollView.showsHorizontalScrollIndicator = NO;
+    cellScrollView.scrollsToTop = NO;
+    cellScrollView.scrollEnabled = YES;
+    
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                           action:@selector(scrollViewUp:)];
+    tapGestureRecognizer.cancelsTouchesInView = YES;
+    [cellScrollView addGestureRecognizer:tapGestureRecognizer];
+    
+    self.tapGestureRecognizer = tapGestureRecognizer;
+    
+    SWLongPressGestureRecognizer *longPressGestureRecognizer = [[SWLongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                                             action:@selector(scrollViewPressed:)];
+    longPressGestureRecognizer.cancelsTouchesInView = NO;
+    longPressGestureRecognizer.minimumPressDuration = 0.1;
+    [cellScrollView addGestureRecognizer:longPressGestureRecognizer];
+    
+    self.longPressGestureRecognizer = longPressGestureRecognizer;
+    
+    self.cellScrollView = cellScrollView;
+>>>>>>> b3b46d4656e9856321189fb8072b5d241ad1f688
+ */
     
     _contentCellView = [[UIView alloc] init];
     [self.cellScrollView addSubview:_contentCellView];
@@ -92,7 +118,14 @@ static NSString * const kTableViewCellContentView = @"UITableViewCellContentView
     UIView *clipViewParent = self.cellScrollView;
     if (![NSStringFromClass([[self.subviews objectAtIndex:0] class]) isEqualToString:kTableViewCellContentView])
     {
-        // iOS 7
+        /*
+         * iOS 7
+         *
+         * This associates contentViewParent to the first subview which is,
+         * in iOS 7, a private class called UITableViewCellScrollView.
+         * The view heiarchy is
+         * UITableViewCell > UITableViewCellScrollView > UITableViewCellContentView
+         */
         contentViewParent = [self.subviews objectAtIndex:0];
         clipViewParent = self;
     }
@@ -112,7 +145,7 @@ static NSString * const kTableViewCellContentView = @"UITableViewCellContentView
                            ]];
     
     self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scrollViewTapped:)];
-    self.tapGestureRecognizer.cancelsTouchesInView = NO;
+    self.tapGestureRecognizer.cancelsTouchesInView = YES;
     self.tapGestureRecognizer.delegate             = self;
     [self.cellScrollView addGestureRecognizer:self.tapGestureRecognizer];
 
@@ -181,6 +214,7 @@ static NSString * const kTableViewPanState = @"state";
 
 - (void)removeOldTableViewPanObserver
 {
+//<<<<<<< HEAD
     [_tableViewPanGestureRecognizer removeObserver:self forKeyPath:kTableViewPanState];
 }
 
@@ -192,9 +226,14 @@ static NSString * const kTableViewPanState = @"state";
 - (void)setContainingTableView:(UITableView *)containingTableView
 {
     [self removeOldTableViewPanObserver];
+/*=======
+    [super layoutSubviews];
+>>>>>>> b3b46d4656e9856321189fb8072b5d241ad1f688
+ */
     
     _tableViewPanGestureRecognizer = containingTableView.panGestureRecognizer;
     
+//<<<<<<< HEAD
     _containingTableView = containingTableView;
     
     if (containingTableView)
@@ -211,6 +250,35 @@ static NSString * const kTableViewPanState = @"state";
         [self.tapGestureRecognizer requireGestureRecognizerToFail:_containingTableView.panGestureRecognizer];
         
         [_tableViewPanGestureRecognizer addObserver:self forKeyPath:kTableViewPanState options:0 context:nil];
+//=======
+    }
+    
+    if (self.accessoryView)
+    {
+        // @todo accessoryView is currently not supported.
+    }
+    else
+    {
+        UIView *scrollView = [self.subviews objectAtIndex:0];
+        UIView *accessoryButton = nil;
+        for (UIView *tView in scrollView.subviews)
+        {
+            // Find the respective accessory button and remove it from the
+            // superview.
+            NSString *className = NSStringFromClass([tView class]);
+            if ([tView isKindOfClass:[UIButton class]] || [className hasSuffix:@"DetailDisclosureView"])
+            {
+                [tView removeFromSuperview];
+                accessoryButton = tView;
+                break;
+            }
+        }
+        // Now move it to our view.
+        if (accessoryButton)
+        {
+            [self.cellScrollView addSubview:accessoryButton];
+        }
+//>>>>>>> b3b46d4656e9856321189fb8072b5d241ad1f688
     }
 }
 
@@ -546,7 +614,12 @@ static NSString * const kTableViewPanState = @"state";
     return scrollPt;
 }
 
+//<<<<<<< HEAD
 - (void)updateCellState
+/*=======
+- (void)setAppearanceWithBlock:(void (^)())appearanceBlock force:(BOOL)force
+>>>>>>> b3b46d4656e9856321189fb8072b5d241ad1f688
+ */
 {
     // Update the cell state according to the current scroll view contentOffset.
     for (NSNumber *numState in @[
@@ -682,6 +755,18 @@ static NSString * const kTableViewPanState = @"state";
                     scrollView.contentOffset = CGPointMake([self leftUtilityButtonsWidth], 0);
                 }
             }
+/*<<<<<<< HEAD
+=======
+            CGFloat scrollViewWidth = MIN(scrollView.contentOffset.x - [self leftUtilityButtonsWidth], [self rightUtilityButtonsWidth]);
+            
+            // Expose the right button view
+            self.scrollViewButtonViewRight.frame = CGRectMake(scrollView.contentOffset.x + (CGRectGetWidth(self.bounds) - scrollViewWidth), 0.0f, scrollViewWidth, self.height);
+            
+            CGRect scrollViewBounds = self.scrollViewButtonViewRight.bounds;
+            scrollViewBounds.origin.x = MAX([self rightUtilityButtonsWidth] - scrollViewWidth, [self rightUtilityButtonsWidth] - scrollView.contentOffset.x);
+            self.scrollViewButtonViewRight.bounds = scrollViewBounds;
+>>>>>>> b3b46d4656e9856321189fb8072b5d241ad1f688
+ */
         }
         else
         {

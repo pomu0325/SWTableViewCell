@@ -132,7 +132,21 @@
     
     for (UIButton *button in self.utilityButtons)
     {
+//<<<<<<< HEAD
         [self.buttonBackgroundColors addObject:button.backgroundColor];
+/*=======
+        CGFloat utilityButtonXCord = 0;
+        if (utilityButtonsCounter >= 1) utilityButtonXCord = _utilityButtonWidth * utilityButtonsCounter;
+        [utilityButton setFrame:CGRectMake(utilityButtonXCord, 0, _utilityButtonWidth, CGRectGetHeight(self.bounds))];
+        [utilityButton setTag:utilityButtonsCounter];
+        SWUtilityButtonTapGestureRecognizer *utilityButtonTapGestureRecognizer = [[SWUtilityButtonTapGestureRecognizer alloc] initWithTarget:_parentCell
+                                                                                                                                      action:_utilityButtonSelector];
+        utilityButtonTapGestureRecognizer.buttonIndex = utilityButtonsCounter;
+        [utilityButton addGestureRecognizer:utilityButtonTapGestureRecognizer];
+        [self addSubview:utilityButton];
+        utilityButtonsCounter++;
+>>>>>>> b3b46d4656e9856321189fb8072b5d241ad1f688
+ */
     }
 }
 
